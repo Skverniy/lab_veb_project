@@ -11,6 +11,7 @@ export const recipeForm = requireElement("#recipe-form");
 export const recipeList = requireElement("#recipe-list");
 export const formMessage = requireElement("#form-message");
 export const resultsCount = requireElement("#results-count");
+export const retryButton = requireElement("#retry-button");
 export function renderMessage(text, isError = false, showRetry = false, onRetry) {
     recipeList.replaceChildren();
     resultsCount.textContent = "";

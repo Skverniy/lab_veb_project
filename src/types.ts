@@ -1,5 +1,5 @@
-export type Category = "Завтрак" | "Обед" | "Ужин" | "Десерт";
-export const CATEGORIES: Category[] = ["Завтрак", "Обед", "Ужин", "Десерт"];
+export const CATEGORIES = ["Завтрак", "Обед", "Ужин", "Десерт"] as const;
+export type Category = typeof CATEGORIES[number];
 
 export interface Review {
   readonly id: string;

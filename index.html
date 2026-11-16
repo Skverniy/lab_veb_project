@@ -30,6 +30,7 @@
         Только избранное
       </label>
     </section>
+
     <section aria-labelledby="add-title">
       <h2 id="add-title">Добавить рецепт</h2>
       <form id="recipe-form">
@@ -54,9 +55,12 @@
         <p id="form-message" role="status"></p>
       </form>
     </section>
+
     <section aria-labelledby="recipes-title">
       <h2 id="recipes-title">Рецепты</h2>
       <p id="results-count" aria-live="polite"></p>
+      <!-- НОВАЯ КНОПКА ДЛЯ ПОВТОРА -->
+      <button id="retry-button" type="button" hidden>Повторить</button>
       <div id="recipe-list" class="recipe-grid"></div>
     </section>
   </main>

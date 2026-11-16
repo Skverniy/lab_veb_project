@@ -1,41 +1,52 @@
-import type { Recipe, NewRecipe, Review } from "./types.js";
-import { parseRecipes } from "./parse.js";
-import { retry } from "./utils.js";
+import type { Recipe, NewRecipe } from "./types.js";
+import { parseRecipe, parseRecipes } from "./parse.js";
 
 const API_URL = "http://localhost:3001/recipes";
 
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) throw new Error(`Сервер вернул ошибку: ${res.status}`);
-  return await res.json() as T;
+async function request(url: string, init?: RequestInit): Promise<unknown> {
+  const response = await fetch(url, init);
+  if (!response.ok) {
+    throw new Error(`Сервер вернул ошибку: ${response.status}`);
+  }
+  return await response.json();
 }
 
-export async function fetchRecipes(): Promise<Recipe[]> {
-  return retry(async () => {
-    const res = await fetch(API_URL);
-    const data: unknown = await handleResponse(res);
-    return parseRecipes(data);
-  });
+export async function fetchRecipes(query = "", signal?: AbortSignal): Promise<Recipe[]> {
+  const text = query.trim();
+  const url = text 
+    ? `${API_URL}?title_like=${encodeURIComponent(text)}` 
+    : API_URL;
+  const data = await request(url, { signal });
+  return parseRecipes(data);
 }
 
-export async function createRecipeAPI(draft: NewRecipe): Promise<Recipe> {
-  const res = await fetch(API_URL, {
+export async function createRecipeOnServer(recipe: NewRecipe): Promise<Recipe> {
+  const data = await request(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...draft, id: crypto.randomUUID() })
+    body: JSON.stringify(recipe)
   });
-  return handleResponse<Recipe>(res);
+  return parseRecipe(data);
 }
 
-export async function deleteRecipeAPI(id: string): Promise<void> {
-  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Не удалось удалить рецепт");
+export async function setFavorite(id: string, favorite: boolean): Promise<Recipe> {
+  const data = await request(`${API_URL}/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ favorite })
+  });
+  return parseRecipe(data);
 }
 
-export async function updateRecipeAPI(id: string, patch: Partial<Recipe>): Promise<Recipe> {
-  const res = await fetch(`${API_URL}/${id}`, {
+export async function updateRecipeOnServer(id: string, patch: Partial<Recipe>): Promise<Recipe> {
+  const data = await request(`${API_URL}/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch)
   });
-  return handleResponse<Recipe>(res);
+  return parseRecipe(data);
+}
+
+export async function deleteRecipeOnServer(id: string): Promise<void> {
+  await request(`${API_URL}/${id}`, { method: "DELETE" });
 }
