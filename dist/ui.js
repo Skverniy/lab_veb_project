@@ -11,6 +11,22 @@ export const recipeForm = requireElement("#recipe-form");
 export const recipeList = requireElement("#recipe-list");
 export const formMessage = requireElement("#form-message");
 export const resultsCount = requireElement("#results-count");
+export function renderMessage(text, isError = false, showRetry = false, onRetry) {
+    recipeList.replaceChildren();
+    resultsCount.textContent = "";
+    const p = document.createElement("p");
+    p.textContent = text;
+    if (isError)
+        p.style.color = "var(--danger)";
+    recipeList.append(p);
+    if (showRetry && onRetry) {
+        const retryBtn = document.createElement("button");
+        retryBtn.textContent = "Повторить";
+        retryBtn.style.marginTop = "10px";
+        retryBtn.addEventListener("click", onRetry);
+        recipeList.append(retryBtn);
+    }
+}
 export function renderRecipes(recipes) {
     recipeList.replaceChildren();
     resultsCount.textContent = `Найдено рецептов: ${recipes.length}`;

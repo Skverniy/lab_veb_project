@@ -1,4 +1,5 @@
 export type Category = "Завтрак" | "Обед" | "Ужин" | "Десерт";
+export const CATEGORIES: Category[] = ["Завтрак", "Обед", "Ужин", "Десерт"];
 
 export interface Review {
   readonly id: string;
@@ -19,7 +20,7 @@ export interface Recipe {
   reviews: Review[];
 }
 
-export type RecipeDraft = Omit<Recipe, "id" | "favorite" | "reviews">;
+export type NewRecipe = Omit<Recipe, "id">;
 
 export type RecipeFilter = {
   query: string;
